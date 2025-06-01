@@ -1,0 +1,21 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:padding="16dp"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/option_delete"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🗑 Xóa ghi chú"
+        android:padding="12dp" />
+
+    <TextView
+        android:id="@+id/option_lock"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔒 Khóa ghi chú"
+        android:padding="12dp" />
+</LinearLayout>

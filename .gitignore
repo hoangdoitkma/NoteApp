@@ -1,0 +1,30 @@
+# Gradle files
+.gradle/
+build/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# IntelliJ IDEA/Android Studio project files
+.idea/
+*.iml
+
+# Keystore files (should not be shared)
+*.jks
+
+# MacOS and Windows
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Generated files
+/captures
+.externalNativeBuild
+
+# Crash reports
+*.stacktrace
+
+# Git ignore for Google Services (Firebase etc)
+google-services.json
