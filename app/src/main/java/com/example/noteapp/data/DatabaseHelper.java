@@ -3,6 +3,8 @@ package com.example.noteapp.data;
 import android.content.*;
 import android.database.*;
 import android.database.sqlite.*;
+
+import com.example.noteapp.model.Expense;
 import com.example.noteapp.model.Note;
 
 import java.util.*;
@@ -93,4 +95,48 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("lastEdited", note.getLastEdited());
         return db.update(TABLE, cv, "id = ?", new String[]{String.valueOf(note.getId())});
     }
+    public List<Expense> getAllExpenses() {
+        List<Expense> expenses = new ArrayList<>();
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT * FROM expenses ORDER BY date DESC", null);
+
+        if (cursor.moveToFirst()) {
+            do {
+                Expense expense = new Expense();
+                expense.setId(cursor.getLong(cursor.getColumnIndexOrThrow("id")));
+                expense.setAmount(cursor.getDouble(cursor.getColumnIndexOrThrow("amount")));
+                expense.setDate(cursor.getString(cursor.getColumnIndexOrThrow("date")));
+                expense.setCategory(cursor.getString(cursor.getColumnIndexOrThrow("category")));
+                expense.setNote(cursor.getString(cursor.getColumnIndexOrThrow("note")));
+                expenses.add(expense);
+            } while (cursor.moveToNext());
+        }
+
+        cursor.close();
+        db.close();
+        return expenses;
+    }
+    public List<Expense> getExpensesByDate(String date) {
+        List<Expense> list = new ArrayList<>();
+        SQLiteDatabase db = getReadableDatabase();
+
+        Cursor cursor = db.rawQuery(
+                "SELECT id, amount, category, date, note FROM expenses WHERE date = ? ORDER BY id DESC",
+                new String[]{date}
+        );
+
+        while (cursor.moveToNext()) {
+            int id = cursor.getInt(0);
+            double amount = cursor.getDouble(1);
+            String category = cursor.getString(2);
+            String dateStr = cursor.getString(3);
+            String note = cursor.getString(4);
+
+            Expense expense = new Expense(id, amount, category, dateStr, note);
+            list.add(expense);
+        }
+        cursor.close();
+        return list;
+    }
+
 }

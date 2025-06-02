@@ -11,6 +11,7 @@
         android:theme="@style/Theme.NoteApp">
         <activity android:name=".ui.notes.EditNoteActivity" />
         <activity android:name=".ui.addnote.AddNoteActivity" />
+        <activity android:name=".ui.expense.ExpenseDetailActivity" />
         <activity android:name=".ui.MainActivity"
             android:exported="true">
             <intent-filter>
@@ -18,5 +19,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.expense.AddExpenseItemActivity" />
     </application>
 </manifest>

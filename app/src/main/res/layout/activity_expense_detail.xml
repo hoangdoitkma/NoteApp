@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp"
+    android:background="@android:color/white">
+
+    <!-- Header tổng chi tiêu -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2"
+        android:layout_marginBottom="16dp">
+
+        <!-- Tổng chi tháng này -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvTotalThisMonthLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tháng này"
+                android:textStyle="bold"
+                android:textColor="#333"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tvTotalThisMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0 đ"
+                android:textSize="18sp"
+                android:textColor="#009688"
+                android:textStyle="bold"/>
+        </LinearLayout>
+
+        <!-- So với tháng trước -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tvCompareLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="So với tháng trước"
+                android:textStyle="bold"
+                android:textColor="#333"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tvCompareWithLastMonth"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="+5%"
+                android:textSize="18sp"
+                android:textColor="#FF5722"
+                android:textStyle="bold"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Danh sách ngày chi tiêu -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvExpenseByDay"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:overScrollMode="never"
+        android:clipToPadding="false"/>
+
+    <!-- Danh sách chi tiết trong ngày khi click vào ngày -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewExpenseDetails"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:nestedScrollingEnabled="false"
+        android:visibility="gone" />
+
+    <!-- Nút thêm khoản chi -->
+    <Button
+        android:id="@+id/btnAddExpense"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Thêm khoản chi"
+        android:layout_marginTop="16dp"
+        android:backgroundTint="#009688"
+        android:textColor="@android:color/white"
+        android:textStyle="bold"/>
+
+</LinearLayout>

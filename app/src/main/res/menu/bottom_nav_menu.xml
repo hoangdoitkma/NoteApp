@@ -1,11 +1,22 @@
-<?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:id="@+id/menu_notes"
-        android:icon="@android:drawable/ic_menu_edit"
+        android:id="@+id/navigation_notes"
+        android:icon="@drawable/ic_note"
         android:title="Ghi chú" />
     <item
-        android:id="@+id/menu_todos"
-        android:icon="@android:drawable/ic_menu_agenda"
+        android:id="@+id/navigation_todos"
+        android:icon="@drawable/ic_todo"
         android:title="Việc cần làm" />
+    <item
+        android:id="@+id/navigation_qr"
+        android:icon="@drawable/ic_qr_code"
+        android:title="QR của tôi" />
+    <item
+        android:id="@+id/navigation_expense"
+        android:icon="@drawable/ic_wallet"
+        android:title="Chi tiêu" />
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_settings"
+        android:title="Cài đặt" />
 </menu>
