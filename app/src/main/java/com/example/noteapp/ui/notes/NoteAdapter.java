@@ -1,69 +1,86 @@
 package com.example.noteapp.ui.notes;
 
-import android.view.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.noteapp.R;
 import com.example.noteapp.model.Note;
 
-import java.util.ArrayList;
 import java.util.List;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
-    private final List<Note> notes = new ArrayList<>();
-    private OnNoteClickListener listener;
-    private OnNoteLongClickListener onNoteLongClickListener;
+public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
+    private List<Note> notes;
 
-    public interface OnNoteClickListener {
-        void onNoteClick(Note note);
-    }
-    public interface OnNoteLongClickListener {
-        void onNoteLongClick(Note note);
+    // Interface callback chung cho click và long click
+    public interface OnItemClickListener {
+        void onItemClick(Note note);
+        void onItemLongClick(Note note, int position);
     }
 
-    public void setOnNoteLongClickListener(OnNoteLongClickListener listener) {
-        this.onNoteLongClickListener = listener;
+    private OnItemClickListener listener;
+
+    public NoteAdapter(List<Note> notes) {
+        this.notes = notes;
     }
 
-    public void setOnNoteClickListener(OnNoteClickListener listener) {
+    public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener = listener;
     }
 
-    public void setNotes(List<Note> newNotes) {
-        notes.clear();
-        notes.addAll(newNotes);
+    public List<Note> getNotes() {
+        return notes;
+    }
+
+    public void setNotes(List<Note> notes) {
+        this.notes = notes;
         notifyDataSetChanged();
     }
 
     @NonNull
     @Override
     public NoteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_note, parent, false);
-        return new NoteViewHolder(v);
+        View view = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_note, parent, false);
+        return new NoteViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull NoteViewHolder holder, int pos) {
-        Note note = notes.get(pos);
-        if (note.isLocked()) {
-            holder.titleTextView.setText("Ghi chú bị khóa");
-            holder.contentTextView.setText("");
-        } else {
-            holder.titleTextView.setText(note.getTitle());
-            holder.contentTextView.setText(note.getContent());
-        }
+    public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
+        Note note = notes.get(position);
+        holder.title.setText(note.getTitle());
+        holder.content.setText(note.getContent());
 
         holder.itemView.setOnClickListener(v -> {
-            if (listener != null) listener.onNoteClick(note);
+            if (listener != null) {
+                listener.onItemClick(note);
+            }
         });
+
         holder.itemView.setOnLongClickListener(v -> {
-            if (onNoteLongClickListener != null) onNoteLongClickListener.onNoteLongClick(note);
-            return true;
+            if (listener != null) {
+                listener.onItemLongClick(note, position);
+                return true;
+            }
+            return false;
         });
     }
 
     @Override
     public int getItemCount() {
-        return notes.size();
+        return notes != null ? notes.size() : 0;
+    }
+
+    static class NoteViewHolder extends RecyclerView.ViewHolder {
+        TextView title, content;
+
+        public NoteViewHolder(@NonNull View itemView) {
+            super(itemView);
+            title = itemView.findViewById(R.id.noteTitle);
+            content = itemView.findViewById(R.id.noteContent);
+        }
     }
 }

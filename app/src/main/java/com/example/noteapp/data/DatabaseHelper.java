@@ -11,7 +11,7 @@ import java.util.*;
 
 public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String DB_NAME = "notes.db";
-    private static final int DB_VERSION = 2;  // Tăng version
+    private static final int DB_VERSION = 2;  // Tăng version database
     private static final String TABLE = "notes";
 
     public DatabaseHelper(Context context) {
@@ -20,20 +20,33 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        // Tạo bảng notes với đủ cột ngay từ đầu
         db.execSQL("CREATE TABLE " + TABLE + " (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 "title TEXT, " +
                 "content TEXT, " +
                 "timestamp LONG, " +
-                "locked INTEGER DEFAULT 0, " +
-                "lastEdited LONG DEFAULT 0" +
+                "locked INTEGER DEFAULT 0, " +    // cột locked đã có
+                "lastEdited LONG DEFAULT 0" +     // cột lastEdited đã có
                 ")");
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldV, int newV) {
-        if (oldV < 2) {
-            db.execSQL("ALTER TABLE " + TABLE + " ADD COLUMN lastEdited LONG DEFAULT 0");
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        // Nếu cập nhật từ version cũ nhỏ hơn 2
+        if (oldVersion < 2) {
+            // Thêm cột locked nếu chưa có
+            try {
+                db.execSQL("ALTER TABLE " + TABLE + " ADD COLUMN locked INTEGER DEFAULT 0");
+            } catch (SQLiteException e) {
+                // Cột locked có thể đã tồn tại, bỏ qua lỗi
+            }
+            // Thêm cột lastEdited nếu chưa có
+            try {
+                db.execSQL("ALTER TABLE " + TABLE + " ADD COLUMN lastEdited LONG DEFAULT 0");
+            } catch (SQLiteException e) {
+                // Cột lastEdited có thể đã tồn tại, bỏ qua lỗi
+            }
         }
     }
 
@@ -43,7 +56,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("title", note.getTitle());
         cv.put("content", note.getContent());
         cv.put("timestamp", note.getTimestamp());
-        cv.put("lastEdited", note.getLastEdited());  // Thêm giá trị lastEdited khi insert
+        cv.put("locked", note.isLocked() ? 1 : 0);
+        cv.put("lastEdited", note.getLastEdited());
         return db.insert(TABLE, null, cv);
     }
 
@@ -57,7 +71,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 n.setTitle(cursor.getString(cursor.getColumnIndexOrThrow("title")));
                 n.setContent(cursor.getString(cursor.getColumnIndexOrThrow("content")));
                 n.setTimestamp(cursor.getLong(cursor.getColumnIndexOrThrow("timestamp")));
-                n.setLastEdited(cursor.getLong(cursor.getColumnIndexOrThrow("lastEdited"))); // Lấy lastEdited
+                n.setLocked(cursor.getInt(cursor.getColumnIndexOrThrow("locked")) == 1);
+                n.setLastEdited(cursor.getLong(cursor.getColumnIndexOrThrow("lastEdited")));
                 notes.add(n);
             } while (cursor.moveToNext());
         }
@@ -74,7 +89,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             note.setTitle(cursor.getString(cursor.getColumnIndexOrThrow("title")));
             note.setContent(cursor.getString(cursor.getColumnIndexOrThrow("content")));
             note.setTimestamp(cursor.getLong(cursor.getColumnIndexOrThrow("timestamp")));
-            note.setLastEdited(cursor.getLong(cursor.getColumnIndexOrThrow("lastEdited"))); // Lấy lastEdited
+            note.setLocked(cursor.getInt(cursor.getColumnIndexOrThrow("locked")) == 1);
+            note.setLastEdited(cursor.getLong(cursor.getColumnIndexOrThrow("lastEdited")));
             cursor.close();
             return note;
         }
@@ -92,9 +108,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("title", note.getTitle());
         cv.put("content", note.getContent());
         cv.put("timestamp", note.getTimestamp());
+        cv.put("locked", note.isLocked() ? 1 : 0);
         cv.put("lastEdited", note.getLastEdited());
         return db.update(TABLE, cv, "id = ?", new String[]{String.valueOf(note.getId())});
     }
+
+    // Các method liên quan Expense thì giữ nguyên
     public List<Expense> getAllExpenses() {
         List<Expense> expenses = new ArrayList<>();
         SQLiteDatabase db = this.getReadableDatabase();
@@ -116,6 +135,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         db.close();
         return expenses;
     }
+
     public List<Expense> getExpensesByDate(String date) {
         List<Expense> list = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();

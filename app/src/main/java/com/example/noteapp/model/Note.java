@@ -1,15 +1,15 @@
+/* Note.java */
 package com.example.noteapp.model;
 
 public class Note {
     private int id;
     private String title;
     private String content;
-    private long timestamp;     // Thời gian tạo
-    private long lastEdited;    // Thời gian chỉnh sửa cuối cùng
-    private boolean locked;     // Ghi chú có bị khóa hay không
+    private long timestamp;
+    private long lastEdited;
+    private boolean locked;
 
-    public Note() {
-    }
+    public Note() {}
 
     public Note(String title, String content, long timestamp, long lastEdited, boolean locked) {
         this.title = title;
@@ -19,14 +19,13 @@ public class Note {
         this.locked = locked;
     }
 
-    public Note(String title, String content, long timestamp) {
+    public Note(String title, String content, long l) {
         this.title = title;
         this.content = content;
-        this.timestamp = timestamp;
+        this.timestamp = l;
+        this.lastEdited = l;
+        this.locked = false;
     }
-
-
-    // Getter và Setter
 
     public int getId() {
         return id;
@@ -75,4 +74,16 @@ public class Note {
     public void setLocked(boolean locked) {
         this.locked = locked;
     }
+    private boolean pinned;
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
+    }
+
+// Getters and setters
+    // ... (omitted for brevity)
 }
