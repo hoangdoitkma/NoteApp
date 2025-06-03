@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.example.noteapp.R;
 import com.example.noteapp.data.NoteDao;
 import com.example.noteapp.model.Note;
+import com.example.noteapp.ui.notes.NotesFragment;
 
 public class AddNoteActivity extends AppCompatActivity {
 
@@ -57,6 +58,7 @@ public class AddNoteActivity extends AppCompatActivity {
                 newNote.setContent(content);
                 noteDao.insertNote(newNote);
                 Toast.makeText(this, "Đã thêm ghi chú", Toast.LENGTH_SHORT).show();
+
             } else {
                 // Cập nhật ghi chú
                 currentNote.setTitle(title);

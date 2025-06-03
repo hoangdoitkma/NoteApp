@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.*;
 import android.widget.*;
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -26,7 +25,6 @@ public class NotesFragment extends Fragment {
     private NoteViewModel noteViewModel;
     private Spinner spinnerFilter;
 
-
     private boolean biometricVerifiedForLockedNotes = false;
     private int selectedFilterPosition = 0;
 
@@ -36,13 +34,21 @@ public class NotesFragment extends Fragment {
 
         spinnerFilter = v.findViewById(R.id.spinnerFilter);
 
+        // Set adapter cho spinner với layout tùy chỉnh spinner_item.xml
+        ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter.createFromResource(
+                getContext(),
+                R.array.note_filter_options,
+                R.layout.spinner_item
+        );
+        adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFilter.setAdapter(adapterSpinner);
+
         adapter = new NoteAdapter(new ArrayList<>());
         adapter.setOnItemClickListener(new NoteAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(Note note) {
                 if (note.isLocked()) {
                     if (biometricVerifiedForLockedNotes) {
-                        // Đã xác thực, mở luôn
                         openEditNoteActivity(note);
                     } else {
                         if (getActivity() instanceof AppCompatActivity) {
@@ -78,7 +84,7 @@ public class NotesFragment extends Fragment {
         spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedFilterPosition = position; // lưu lại vị trí được chọn
+                selectedFilterPosition = position;
 
                 if (position == 0) {
                     biometricVerifiedForLockedNotes = false;
@@ -110,9 +116,7 @@ public class NotesFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-
-        // Mặc định load ghi chú chưa khóa
-        spinnerFilter.setSelection(selectedFilterPosition); // Tự trigger lại itemSelected
+        spinnerFilter.setSelection(selectedFilterPosition);
 
         FloatingActionButton fabAddNote = v.findViewById(R.id.fabAddNote);
         fabAddNote.setOnClickListener(view -> {
@@ -128,7 +132,6 @@ public class NotesFragment extends Fragment {
         intent.putExtra("noteId", note.getId());
         startActivity(intent);
     }
-
 
     private void loadLockedNotes() {
         noteViewModel.getNotesWhereLocked(true).observe(getViewLifecycleOwner(), notes -> {
@@ -149,7 +152,6 @@ public class NotesFragment extends Fragment {
         });
     }
 
-
     private void showNoteOptionsDialog(Note note, int position) {
         BottomSheetDialog dialog = new BottomSheetDialog(requireContext());
         View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_note_options, null);
@@ -160,6 +162,7 @@ public class NotesFragment extends Fragment {
             adapter.getNotes().remove(position);
             adapter.notifyItemRemoved(position);
             Toast.makeText(getContext(), "Đã xóa ghi chú", Toast.LENGTH_SHORT).show();
+            loadUnlockedNotes();
             dialog.dismiss();
         });
 
@@ -170,7 +173,7 @@ public class NotesFragment extends Fragment {
                         if (success) {
                             note.setLocked(true);
                             noteViewModel.updateNote(note);
-                            loadUnlockedNotes(); // ẩn ghi chú khóa đi
+                            loadUnlockedNotes();
                             Toast.makeText(getContext(), "Đã khóa ghi chú", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(getContext(), "Xác thực không thành công", Toast.LENGTH_SHORT).show();
@@ -189,19 +192,20 @@ public class NotesFragment extends Fragment {
             note.setPinned(true);
             noteViewModel.updateNote(note);
             Toast.makeText(getContext(), "Đã ghim ghi chú", Toast.LENGTH_SHORT).show();
-            loadUnlockedNotes(); // Cập nhật lại danh sách
+            loadUnlockedNotes();
             dialog.dismiss();
         });
 
         dialog.show();
     }
-    private boolean showLockedNotes = false;
-    @Override
 
+    private boolean showLockedNotes = false;
+
+    @Override
     public void onResume() {
         super.onResume();
         if (biometricVerifiedForLockedNotes && showLockedNotes) {
-            loadLockedNotes(); // Explicitly reload locked notes
+            loadLockedNotes();
         }
     }
 }

@@ -1,110 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="@android:color/white"
+    tools:context=".ui.expense.ExpenseFragment">
 
-    <!-- Layout tổng chi tháng này và tháng trước -->
-    <LinearLayout
-        android:id="@+id/layoutMonthlySummary"
+    <!-- Tổng kết tháng -->
+    <com.google.android.material.card.MaterialCardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="2"
-        android:paddingBottom="16dp">
+        android:layout_marginBottom="16dp"
+        app:cardElevation="4dp"
+        app:cardCornerRadius="16dp"
+        app:strokeColor="?attr/colorOutline">
 
         <LinearLayout
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_width="0dp"
+            android:id="@+id/layoutMonthlySummary"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center">
+            android:orientation="horizontal"
+            android:padding="16dp"
+            android:weightSum="2">
 
-            <TextView
-                android:id="@+id/tvTotalThisMonth"
-                android:layout_width="wrap_content"
+            <!-- Tổng tháng này -->
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="0 đ"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#FF5722" />
+                android:orientation="vertical"
+                android:gravity="center">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTotalThisMonth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 đ"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                    android:textColor="?attr/colorPrimary" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Tổng chi tháng này"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?attr/colorOnSurface" />
+            </LinearLayout>
+
+            <!-- So với tháng trước -->
+            <LinearLayout
+                android:layout_weight="1"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Tổng chi tháng này"
-                android:textSize="14sp"
-                android:textColor="#555555" />
+                android:orientation="vertical"
+                android:gravity="center">
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/tvTotalLastMonth"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="0 đ"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                    android:textColor="?attr/colorPrimary" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="So với tháng trước"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?attr/colorOnSurface" />
+            </LinearLayout>
         </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
 
-        <LinearLayout
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:gravity="center">
-
-            <TextView
-                android:id="@+id/tvTotalLastMonth"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0 đ"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:textColor="#FF5722" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="So với tháng trước"
-                android:textSize="14sp"
-                android:textColor="#555555" />
-        </LinearLayout>
-    </LinearLayout>
-
-    <!-- Tổng chi tiết ngày -->
-    <TextView
+    <!-- Tổng chi trong ngày -->
+    <com.google.android.material.textview.MaterialTextView
         android:id="@+id/tvDailyTotal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Tổng chi trong ngày: 0 đ"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:textColor="#FF5722"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        android:textColor="?attr/colorPrimary"
         android:padding="8dp"
         android:visibility="gone" />
 
-
-    <!-- Danh sách ngày -->
+    <!-- RecyclerView ngày -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewExpenseDay"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1" />
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp" />
 
-    <!-- Danh sách chi tiết ngày -->
+    <!-- RecyclerView chi tiết ngày -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewExpenseDetails"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:visibility="gone" />
+        android:visibility="gone"
+        android:clipToPadding="false"
+        android:paddingBottom="8dp" />
 
     <!-- Nút quay lại -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBackToDays"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Quay lại"
+        android:layout_marginTop="8dp"
         android:visibility="gone"
-        android:layout_marginTop="8dp" />
+        style="@style/Widget.Material3.Button.OutlinedButton" />
 
     <!-- Nút thêm khoản chi -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/btnAddExpense"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Thêm khoản chi"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="16dp"
+        style="@style/Widget.Material3.Button"
+        app:icon="@drawable/ic_add"
+        app:iconGravity="textStart"
+        app:iconPadding="8dp" />
+
 </LinearLayout>

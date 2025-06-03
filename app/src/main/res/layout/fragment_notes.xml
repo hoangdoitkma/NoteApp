@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- AppBar với tên ứng dụng và Spinner -->
+    <!-- AppBar với Toolbar và Spinner bên phải -->
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -14,33 +14,30 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            app:title="NoteApp">
 
-            <!-- Spinner để chọn loại ghi chú -->
+            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <!-- Spinner nằm bên phải -->
             <Spinner
                 android:id="@+id/spinnerFilter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
                 android:spinnerMode="dropdown"
-                android:entries="@array/note_filter_options"
                 android:padding="8dp"
-                android:backgroundTint="@android:color/white"
+                android:background="@android:color/white"
                 />
         </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
-    <!-- RecyclerView hiển thị danh sách ghi chú -->
+    <!-- RecyclerView hiển thị ghi chú -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewNotes"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="8dp"
         android:clipToPadding="false"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
     <!-- Nút thêm ghi chú -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -50,8 +47,6 @@
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
         android:contentDescription="Thêm ghi chú"
-        android:src="@android:drawable/ic_input_add"
-        app:backgroundTint="@color/colorAccent" />
-
+        android:src="@drawable/ic_add" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

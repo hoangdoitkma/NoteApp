@@ -18,6 +18,6 @@
     <color name="colorAccent">#FF4081</color>
     <color name="md_theme_light_error">#B3261E</color>
     <color name="md_theme_light_onError">#FFFFFF</color>
-
+    <color name="purple_500">#6200EE</color>
     <!-- Add your custom colors if needed -->
 </resources>
