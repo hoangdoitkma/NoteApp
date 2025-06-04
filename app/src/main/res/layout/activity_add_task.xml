@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <!-- Toolbar ở trên cùng -->
+    <!-- Toolbar -->
     <androidx.appcompat.widget.Toolbar
         android:id="@+id/toolbar"
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
         app:title="Việc cần làm"
         app:titleTextColor="@android:color/white" />
 
-    <!-- Nội dung chính cuộn được -->
+    <!-- Nội dung chính -->
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -26,9 +26,13 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <!-- Tiêu đề -->
             <TextView
                 android:text="Tiêu đề công việc"
                 android:textSize="16sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#333333"
+                android:layout_marginBottom="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -37,12 +41,18 @@
                 android:hint="Nhập tiêu đề"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="textCapSentences" />
+                android:inputType="textCapSentences"
+                android:background="@drawable/rounded_edittext"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp" />
 
+            <!-- Mô tả -->
             <TextView
                 android:text="Mô tả (tùy chọn)"
                 android:textSize="16sp"
-                android:layout_marginTop="16dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#333333"
+                android:layout_marginBottom="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
@@ -52,35 +62,60 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="textMultiLine"
-                android:minLines="3" />
+                android:minLines="3"
+                android:background="@drawable/rounded_edittext"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp" />
 
+            <!-- Ngày & Giờ -->
             <TextView
-                android:text="Chọn ngày và giờ nhắc"
+                android:text="Nhắc vào thời gian"
                 android:textSize="16sp"
-                android:layout_marginTop="16dp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#333333"
+                android:layout_marginBottom="4dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content" />
 
-            <Button
-                android:id="@+id/btnPickDate"
-                android:text="Chọn ngày"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <Button
-                android:id="@+id/btnPickTime"
-                android:text="Chọn giờ"
-                android:layout_marginTop="8dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <!-- Layout ngang chứa nút chọn nhạc chuông + text tên nhạc chuông -->
             <LinearLayout
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginBottom="16dp"
+                android:weightSum="2">
+
+                <Button
+                    android:id="@+id/btnPickDate"
+                    android:text="Chọn ngày"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp" />
+
+                <Button
+                    android:id="@+id/btnPickTime"
+                    android:text="Chọn giờ"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp" />
+            </LinearLayout>
+
+            <!-- Nhạc chuông -->
+            <TextView
+                android:text="Âm báo"
+                android:textSize="16sp"
+                android:fontFamily="sans-serif-medium"
+                android:textColor="#333333"
+                android:layout_marginBottom="4dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
                 android:gravity="center_vertical">
 
                 <Button
@@ -98,27 +133,26 @@
                     android:text="Không có nhạc chuông"
                     android:textColor="#666666"
                     android:textSize="14sp" />
-
             </LinearLayout>
 
+            <!-- Nút Lặp lại -->
             <Button
                 android:id="@+id/btnRepeatDays"
                 android:text="Lặp lại vào:"
-                android:layout_marginTop="24dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:backgroundTint="@color/purple_500"
-                android:textColor="@android:color/white" />
+                android:textColor="@android:color/white"
+                android:layout_marginBottom="16dp" />
 
+            <!-- Nút Lưu -->
             <Button
                 android:id="@+id/btnSave"
                 android:text="Lưu công việc"
-                android:layout_marginTop="24dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:backgroundTint="@color/purple_500"
+                android:backgroundTint="@color/purple_700"
                 android:textColor="@android:color/white" />
-
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

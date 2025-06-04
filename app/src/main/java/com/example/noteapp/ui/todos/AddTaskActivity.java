@@ -52,6 +52,8 @@ public class AddTaskActivity extends AppCompatActivity {
     private TextView txtRingtone;
     private Button btnChooseRingtone;
     private TaskDatabaseHelper dbHelper;
+    private int taskId = -1;
+    private Task editingTask = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +89,47 @@ public class AddTaskActivity extends AppCompatActivity {
         btnRepeatDays.setOnClickListener(v -> showRepeatDaysDialog());
 
         btnSave.setOnClickListener(v -> saveTask());
+        taskId = getIntent().getIntExtra("taskId", -1);
+        if (taskId != -1) {
+            editingTask = dbHelper.getTaskById(taskId);
+            if (editingTask != null) {
+                // Gán dữ liệu lên giao diện
+                edtTitle.setText(editingTask.getTitle());
+                edtDescription.setText(editingTask.getDescription());
+
+                // Gán thời gian nếu có
+                if (editingTask.getDueTimeMillis() > 0) {
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTimeInMillis(editingTask.getDueTimeMillis());
+
+                    year = cal.get(Calendar.YEAR);
+                    month = cal.get(Calendar.MONTH);
+                    day = cal.get(Calendar.DAY_OF_MONTH);
+                    hour = cal.get(Calendar.HOUR_OF_DAY);
+                    minute = cal.get(Calendar.MINUTE);
+
+                    btnPickDate.setText(String.format("%02d/%02d/%04d", day, month + 1, year));
+                    btnPickTime.setText(String.format("%02d:%02d", hour, minute));
+                    dueTimeMillis = editingTask.getDueTimeMillis();
+                }
+
+                // Gán ngày lặp lại nếu có
+                String repeatDaysStr = editingTask.getRepeatDays(); // VD: "0,1,3"
+                if (repeatDaysStr != null && !repeatDaysStr.isEmpty()) {
+                    String[] dayArr = repeatDaysStr.split(",");
+                    repeatDaysSelected.clear();
+                    String[] days = {"Chủ Nhật", "Thứ 2", "Thứ 3", "Thứ 4", "Thứ 5", "Thứ 6", "Thứ 7"};
+                    StringBuilder sb = new StringBuilder();
+                    for (String s : dayArr) {
+                        int d = Integer.parseInt(s);
+                        repeatDaysSelected.add(d);
+                        sb.append(days[d]).append(", ");
+                    }
+                    btnRepeatDays.setText(sb.substring(0, sb.length() - 2));
+                }
+            }
+        }
+
     }
 
     private void scheduleNotification(Task task) {
@@ -217,20 +260,36 @@ public class AddTaskActivity extends AppCompatActivity {
         }
         String repeatDays = repeatDaysStr.length() > 0 ? repeatDaysStr.substring(0, repeatDaysStr.length() - 1) : "";
 
-        Task task = new Task();
-        task.setTitle(title);
-        task.setDescription(description);
-        task.setDueTimeMillis(dueTimeMillis);
-        task.setCompleted(false);
-        task.setRepeatDays(repeatDays);
-        task.setRingtoneUri(selectedRingtoneUri != null ? selectedRingtoneUri.toString() : null);
+        Task task;
+        if (editingTask != null) {
+            // Cập nhật task hiện tại
+            editingTask.setTitle(title);
+            editingTask.setDescription(description);
+            editingTask.setDueTimeMillis(dueTimeMillis);
+            editingTask.setRepeatDays(repeatDays);
+            editingTask.setRingtoneUri(selectedRingtoneUri != null ? selectedRingtoneUri.toString() : null);
 
-        long id = dbHelper.insertTask(task); // giả sử insert trả về id task
-        task.setId((int) id);
+            dbHelper.updateTask(editingTask);
+            task = editingTask;
+            Toast.makeText(this, "Cập nhật công việc thành công", Toast.LENGTH_SHORT).show();
+        } else {
+            // Thêm task mới
+            task = new Task();
+            task.setTitle(title);
+            task.setDescription(description);
+            task.setDueTimeMillis(dueTimeMillis);
+            task.setCompleted(false);
+            task.setRepeatDays(repeatDays);
+            task.setRingtoneUri(selectedRingtoneUri != null ? selectedRingtoneUri.toString() : null);
 
+            long id = dbHelper.insertTask(task);
+            task.setId((int) id);
+            Toast.makeText(this, "Lưu công việc thành công", Toast.LENGTH_SHORT).show();
+        }
+
+        // Đặt thông báo cho task vừa thêm/cập nhật
         scheduleNotification(task);
 
-        Toast.makeText(this, "Lưu công việc thành công", Toast.LENGTH_SHORT).show();
         finish();
     }
 

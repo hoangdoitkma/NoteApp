@@ -32,7 +32,7 @@ public class NoteDao {
     public List<Note> getAllNotes() {
         List<Note> notes = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query("notes", null, null, null, null, null, "timestamp DESC");
+        Cursor cursor = db.query("notes", null, null, null, null, null, "lastEdited DESC");
 
         if (cursor.moveToFirst()) {
             do {
@@ -47,7 +47,7 @@ public class NoteDao {
     public List<Note> getNotesWhereLocked(boolean locked) {
         List<Note> notes = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        Cursor cursor = db.query("notes", null, "locked = ?", new String[]{locked ? "1" : "0"}, null, null, "timestamp DESC");
+        Cursor cursor = db.query("notes", null, "locked = ?", new String[]{locked ? "1" : "0"}, null, null, "lastEdited DESC");
 
         if (cursor.moveToFirst()) {
             do {

@@ -1,8 +1,8 @@
-<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:padding="16dp"
+    android:background="#FAFAFA">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,19 +11,35 @@
         android:gravity="center_horizontal"
         android:padding="8dp">
 
+        <!-- Tiêu đề -->
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Thêm chi tiêu"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:textColor="#333333"
+            android:gravity="center"
+            android:layout_marginBottom="24dp" />
+
         <EditText
             android:id="@+id/etAmount"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="Số tiền"
             android:inputType="numberDecimal"
-            android:layout_marginBottom="12dp" />
+            android:drawableStart="@drawable/ic_money"
+            android:layout_marginBottom="16dp"
+            android:padding="12dp"
+            android:background="@drawable/rounded_edittext"
+            android:textSize="16sp"/>
 
         <Spinner
             android:id="@+id/spinnerCategory"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="12dp" />
+            android:layout_height="48dp"
+            android:layout_marginBottom="16dp"
+            android:background="@drawable/spinner_background" />
 
         <EditText
             android:id="@+id/etDescription"
@@ -31,20 +47,33 @@
             android:layout_height="wrap_content"
             android:hint="Ghi chú"
             android:inputType="text"
-            android:layout_marginBottom="12dp" />
+            android:drawableStart="@drawable/ic_note"
+            android:layout_marginBottom="16dp"
+            android:padding="12dp"
+            android:background="@drawable/rounded_edittext"
+            android:textSize="16sp"/>
 
         <Button
             android:id="@+id/btnPickDate"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="48dp"
             android:text="Chọn ngày"
-            android:layout_marginBottom="12dp" />
+            android:layout_marginBottom="16dp"
+            android:backgroundTint="#4CAF50"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:background="@drawable/rounded_button"/>
 
         <Button
             android:id="@+id/btnSave"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Lưu" />
-
+            android:layout_height="48dp"
+            android:text="Lưu"
+            android:backgroundTint="#2196F3"
+            android:textColor="#FFFFFF"
+            android:textAllCaps="false"
+            android:textSize="16sp"
+            android:background="@drawable/rounded_button"/>
     </LinearLayout>
 </ScrollView>

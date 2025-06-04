@@ -14,7 +14,7 @@ import java.util.List;
 public class TaskDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "todo_db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;  // Tăng version lên 2
 
     private static final String TABLE_TASKS = "tasks";
 
@@ -29,16 +29,18 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
                 "title TEXT," +
                 "description TEXT," +
                 "dueTimeMillis INTEGER," +
-                "isCompleted INTEGER DEFAULT 0" +
+                "isCompleted INTEGER," +
+                "repeatDays TEXT" +  // Thêm cột repeatDays
                 ")";
         db.execSQL(createTable);
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // Simple drop & recreate for now
-        db.execSQL("DROP TABLE IF EXISTS " + TABLE_TASKS);
-        onCreate(db);
+        if (oldVersion < 2) {
+            // Thêm cột repeatDays khi nâng cấp lên version 2
+            db.execSQL("ALTER TABLE " + TABLE_TASKS + " ADD COLUMN repeatDays TEXT");
+        }
     }
 
     public long insertTask(Task task) {
@@ -48,6 +50,7 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         values.put("description", task.getDescription());
         values.put("dueTimeMillis", task.getDueTimeMillis());
         values.put("isCompleted", task.isCompleted() ? 1 : 0);
+        values.put("repeatDays", task.getRepeatDays());  // Lưu repeatDays
         return db.insert(TABLE_TASKS, null, values);
     }
 
@@ -64,12 +67,30 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
                 task.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
                 task.setDueTimeMillis(cursor.getLong(cursor.getColumnIndexOrThrow("dueTimeMillis")));
                 task.setCompleted(cursor.getInt(cursor.getColumnIndexOrThrow("isCompleted")) == 1);
+                task.setRepeatDays(cursor.getString(cursor.getColumnIndexOrThrow("repeatDays")));  // Đọc repeatDays
                 list.add(task);
             }
             cursor.close();
         }
-
         return list;
+    }
+
+    public Task getTaskById(int id) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        Cursor cursor = db.query(TABLE_TASKS, null, "id=?", new String[]{String.valueOf(id)},
+                null, null, null);
+        if (cursor != null && cursor.moveToFirst()) {
+            Task task = new Task();
+            task.setId(cursor.getInt(cursor.getColumnIndexOrThrow("id")));
+            task.setTitle(cursor.getString(cursor.getColumnIndexOrThrow("title")));
+            task.setDescription(cursor.getString(cursor.getColumnIndexOrThrow("description")));
+            task.setDueTimeMillis(cursor.getLong(cursor.getColumnIndexOrThrow("dueTimeMillis")));
+            task.setCompleted(cursor.getInt(cursor.getColumnIndexOrThrow("isCompleted")) == 1);
+            task.setRepeatDays(cursor.getString(cursor.getColumnIndexOrThrow("repeatDays")));  // Đọc repeatDays
+            cursor.close();
+            return task;
+        }
+        return null;
     }
 
     public int updateTask(Task task) {
@@ -79,7 +100,7 @@ public class TaskDatabaseHelper extends SQLiteOpenHelper {
         values.put("description", task.getDescription());
         values.put("dueTimeMillis", task.getDueTimeMillis());
         values.put("isCompleted", task.isCompleted() ? 1 : 0);
-
+        values.put("repeatDays", task.getRepeatDays());  // Cập nhật repeatDays
         return db.update(TABLE_TASKS, values, "id = ?", new String[]{String.valueOf(task.getId())});
     }
 

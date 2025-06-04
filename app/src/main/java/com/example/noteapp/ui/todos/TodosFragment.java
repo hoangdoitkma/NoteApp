@@ -49,8 +49,12 @@ public class TodosFragment extends Fragment implements TaskAdapter.TaskActionLis
 
     private void loadTasks() {
         taskList = dbHelper.getAllTasks();
-        adapter = new TaskAdapter(getContext(), taskList, this);
-        recyclerView.setAdapter(adapter);
+        if (adapter == null) {
+            adapter = new TaskAdapter(getContext(), taskList, this);
+            recyclerView.setAdapter(adapter);
+        } else {
+            adapter.updateTasks(taskList);  // bạn cần tự tạo hàm updateTasks trong adapter
+        }
     }
 
     @Override
@@ -70,6 +74,9 @@ public class TodosFragment extends Fragment implements TaskAdapter.TaskActionLis
     public void onCompleteTask(Task task, boolean completed) {
         task.setCompleted(completed);
         dbHelper.updateTask(task);
+        if (adapter != null) {
+            adapter.notifyDataSetChanged();
+        }
     }
 
     @Override

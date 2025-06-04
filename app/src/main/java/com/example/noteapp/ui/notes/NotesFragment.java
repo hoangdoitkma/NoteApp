@@ -204,8 +204,10 @@ public class NotesFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-        if (biometricVerifiedForLockedNotes && showLockedNotes) {
-            loadLockedNotes();
+        if (selectedFilterPosition == 0) {
+            loadUnlockedNotes(); // reload ghi chú không khóa
+        } else if (biometricVerifiedForLockedNotes) {
+            loadLockedNotes(); // reload ghi chú đã khóa (nếu đã xác thực)
         }
     }
 }

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/action_pin"
+        android:title="Ghim / Bỏ ghim"
+        android:icon="@drawable/ic_pin"
+        />
+
+    <item
+        android:id="@+id/action_lock"
+        android:title="Khóa / Mở khóa"
+        android:icon="@drawable/ic_lock"
+     />
+
+    <item
+        android:id="@+id/action_delete"
+        android:title="Xóa"
+        android:icon="@drawable/ic_delete"
+        />
+
+</menu>

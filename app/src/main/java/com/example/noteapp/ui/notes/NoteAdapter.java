@@ -4,18 +4,22 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.noteapp.R;
 import com.example.noteapp.model.Note;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
-public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder> {
+public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
+
     private List<Note> notes;
 
-    // Interface callback chung cho click và long click
     public interface OnItemClickListener {
         void onItemClick(Note note);
         void onItemLongClick(Note note, int position);
@@ -51,8 +55,20 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
         Note note = notes.get(position);
-        holder.title.setText(note.getTitle());
-        holder.content.setText(note.getContent());
+
+        holder.titleTextView.setText(note.getTitle());
+        holder.contentTextView.setText(note.getContent());
+
+        // Định dạng ngày tháng cho lastEdited
+        long lastEditedMillis = note.getLastEdited();
+        String formattedDate = "";
+        if (lastEditedMillis > 0) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
+            formattedDate = "Lần sửa cuối: " + sdf.format(new Date(lastEditedMillis));
+        } else {
+            formattedDate = "Chưa sửa";
+        }
+        holder.textViewLastEdited.setText(formattedDate);
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {
@@ -72,15 +88,5 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteAdapter.NoteViewHolder
     @Override
     public int getItemCount() {
         return notes != null ? notes.size() : 0;
-    }
-
-    static class NoteViewHolder extends RecyclerView.ViewHolder {
-        TextView title, content;
-
-        public NoteViewHolder(@NonNull View itemView) {
-            super(itemView);
-            title = itemView.findViewById(R.id.noteTitle);
-            content = itemView.findViewById(R.id.noteContent);
-        }
     }
 }

@@ -51,11 +51,14 @@ public class AddNoteActivity extends AppCompatActivity {
                 return;
             }
 
+            long now = System.currentTimeMillis();
+
             if (currentNote == null) {
                 // Thêm mới ghi chú
                 Note newNote = new Note();
                 newNote.setTitle(title);
                 newNote.setContent(content);
+                newNote.setLastEdited(now);  // <-- thêm dòng này
                 noteDao.insertNote(newNote);
                 Toast.makeText(this, "Đã thêm ghi chú", Toast.LENGTH_SHORT).show();
 
@@ -63,6 +66,7 @@ public class AddNoteActivity extends AppCompatActivity {
                 // Cập nhật ghi chú
                 currentNote.setTitle(title);
                 currentNote.setContent(content);
+                currentNote.setLastEdited(now);  // <-- thêm dòng này
                 noteDao.updateNote(currentNote);
                 Toast.makeText(this, "Đã cập nhật ghi chú", Toast.LENGTH_SHORT).show();
             }

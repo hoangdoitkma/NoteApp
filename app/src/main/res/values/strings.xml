@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">NoteApp</string>
     <string name="add_note">Thêm ghi chú</string>
-
+    <string name="add_expense">Thêm chi tiêu</string>
     <string-array name="note_filter_options">
         <item>Tất cả ghi chú</item>
         <item>Ghi chú đã khóa</item>

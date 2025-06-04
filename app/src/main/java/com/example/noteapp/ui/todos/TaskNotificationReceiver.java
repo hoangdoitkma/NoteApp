@@ -34,21 +34,11 @@ public class TaskNotificationReceiver extends BroadcastReceiver {
         if (ringtoneUriStr != null) {
             ringtoneUri = Uri.parse(ringtoneUriStr);
         } else {
-            // Mặc định nhạc chuông hệ thống
             ringtoneUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
         }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = new NotificationChannel(
-                    CHANNEL_ID,
-                    "Task Notifications",
-                    NotificationManager.IMPORTANCE_HIGH
-            );
-            channel.setDescription("Thông báo nhắc việc cần làm");
-            NotificationManager notificationManager = context.getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
-        }
+
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_notification) // icon bạn phải có trong drawable
+                .setSmallIcon(R.drawable.ic_notification) // thay icon phù hợp trong drawable
                 .setContentTitle(title)
                 .setContentText(description)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -56,10 +46,12 @@ public class TaskNotificationReceiver extends BroadcastReceiver {
                 .setAutoCancel(true);
 
         NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
 
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Có thể yêu cầu cấp quyền nếu thiếu
             return;
         }
+
         notificationManager.notify(taskId, builder.build());
     }
 

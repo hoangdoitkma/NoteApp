@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             } else if (id == R.id.navigation_todos) {
                 loadFragment(new TodosFragment(), "Việc cần làm");
             } else if (id == R.id.navigation_qr) {
-                loadFragment(new QrFragment(), "Quét QR");
+                loadFragment(new QrFragment(), "QR của tôi");
             } else if (id == R.id.navigation_expense) {
                 loadFragment(new ExpenseFragment(), "Chi tiêu");
             } else if (id == R.id.navigation_settings) {
