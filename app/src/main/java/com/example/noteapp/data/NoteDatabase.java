@@ -15,12 +15,26 @@ public class NoteDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE notes (id INTEGER PRIMARY KEY AUTOINCREMENT, title TEXT, content TEXT, timestamp LONG, lastEdited LONG, locked INTEGER)");
+        db.execSQL("CREATE TABLE notes (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
+                "title TEXT, " +
+                "content TEXT, " +
+                "timestamp LONG, " +
+                "lastEdited LONG, " +
+                "locked INTEGER DEFAULT 0, " +
+                "pinned INTEGER DEFAULT 0" +  // Thêm cột pinned với giá trị mặc định
+                ")");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        db.execSQL("DROP TABLE IF EXISTS notes");
-        onCreate(db);
+        if (oldVersion < 2) {
+            // Thêm cột pinned nếu chưa có
+            try {
+                db.execSQL("ALTER TABLE notes ADD COLUMN pinned INTEGER DEFAULT 0");
+            } catch (Exception e) {
+                e.printStackTrace(); // hoặc xử lý lỗi phù hợp
+            }
+        }
     }
 }

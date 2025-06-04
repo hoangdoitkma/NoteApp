@@ -1,6 +1,8 @@
 package com.example.noteapp.ui.qr;
 
 import android.os.Bundle;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -18,11 +20,20 @@ public class QRCodeDetailActivity extends AppCompatActivity {
         ImageView imageView = findViewById(R.id.imageViewDetail);
         TextView titleView = findViewById(R.id.textViewDetailTitle);
 
+        int width = getResources().getDisplayMetrics().widthPixels;
+
+        ViewGroup.LayoutParams params = imageView.getLayoutParams();
+        params.height = width; // chiều cao bằng chiều ngang (vuông)
+        imageView.setLayoutParams(params);
+
+        imageView.setVisibility(View.VISIBLE);
+
         String path = getIntent().getStringExtra("path");
         String title = getIntent().getStringExtra("title");
 
         Glide.with(this).load(path).into(imageView);
         titleView.setText(title);
+
     }
 }
 

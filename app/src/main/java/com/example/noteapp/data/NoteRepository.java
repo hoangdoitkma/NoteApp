@@ -50,6 +50,36 @@ public class NoteRepository {
         });
         return liveData;
     }
+    // Lấy danh sách note theo trạng thái pinned
+    public LiveData<List<Note>> getNotesWherePinned(boolean pinned) {
+        MutableLiveData<List<Note>> liveData = new MutableLiveData<>();
+        executorService.execute(() -> {
+            List<Note> notes = noteDao.getNotesWherePinned(pinned);
+            liveData.postValue(notes);
+        });
+        return liveData;
+    }
+
+    public LiveData<List<Note>> getPinnedUnlockedNotes(int limit) {
+        MutableLiveData<List<Note>> liveData = new MutableLiveData<>();
+        executorService.execute(() -> {
+            List<Note> pinnedNotes = noteDao.getPinnedUnlockedNotes(limit);
+            liveData.postValue(pinnedNotes);
+        });
+        return liveData;
+    }
+    public List<Note> getPinnedUnlockedNotesSortedByLastEditedAsc() {
+        return noteDao.getPinnedUnlockedNotesSortedByLastEditedAsc();
+    }
+
+    public LiveData<List<Note>> getUnpinnedUnlockedNotes() {
+        MutableLiveData<List<Note>> liveData = new MutableLiveData<>();
+        executorService.execute(() -> {
+            List<Note> unpinnedNotes = noteDao.getUnpinnedUnlockedNotes();
+            liveData.postValue(unpinnedNotes);
+        });
+        return liveData;
+    }
 
     // Thêm ghi chú
     public void insertNote(Note note) {

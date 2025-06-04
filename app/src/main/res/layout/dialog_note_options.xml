@@ -21,26 +21,18 @@
             android:text="🗑️ Xóa ghi chú" />
 
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/option_lock"
+            android:id="@+id/option_toggle_lock"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="🔒 Khóa ghi chú" />
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/option_unlock"
-            style="@style/Widget.Material3.Button.TextButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="🔓 Bỏ khóa ghi chú"
-            android:visibility="gone" />
+            android:text="🔒 Khóa/Bỏ khóa ghi chú" />
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/option_pin"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="📌 Ghim ghi chú lên trên" />
+            android:text="📌 Ghim/Bỏ ghim" />
 
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>

@@ -51,7 +51,7 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
                 .inflate(R.layout.item_note, parent, false);
         return new NoteViewHolder(view);
     }
-
+    
     @Override
     public void onBindViewHolder(@NonNull NoteViewHolder holder, int position) {
         Note note = notes.get(position);
@@ -59,9 +59,8 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
         holder.titleTextView.setText(note.getTitle());
         holder.contentTextView.setText(note.getContent());
 
-        // Định dạng ngày tháng cho lastEdited
         long lastEditedMillis = note.getLastEdited();
-        String formattedDate = "";
+        String formattedDate;
         if (lastEditedMillis > 0) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
             formattedDate = "Lần sửa cuối: " + sdf.format(new Date(lastEditedMillis));
@@ -69,6 +68,15 @@ public class NoteAdapter extends RecyclerView.Adapter<NoteViewHolder> {
             formattedDate = "Chưa sửa";
         }
         holder.textViewLastEdited.setText(formattedDate);
+
+        // Hiển thị icon pinned ở đầu titleTextView
+        if (note.isPinned()) {
+            holder.titleTextView.setCompoundDrawablesWithIntrinsicBounds(
+                    R.drawable.ic_pin, 0, 0, 0);
+        } else {
+            // reset không hiển thị drawable khi không pinned
+            holder.titleTextView.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+        }
 
         holder.itemView.setOnClickListener(v -> {
             if (listener != null) {

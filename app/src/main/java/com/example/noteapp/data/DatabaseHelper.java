@@ -27,7 +27,8 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 "content TEXT, " +
                 "timestamp LONG, " +
                 "locked INTEGER DEFAULT 0, " +    // cột locked đã có
-                "lastEdited LONG DEFAULT 0" +     // cột lastEdited đã có
+                "lastEdited LONG DEFAULT 0," +     // cột lastEdited đã có
+                "pinned INTEGER DEFAULT 0" +
                 ")");
     }
 
@@ -47,6 +48,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             } catch (SQLiteException e) {
                 // Cột lastEdited có thể đã tồn tại, bỏ qua lỗi
             }
+            try {
+                db.execSQL("ALTER TABLE notes ADD COLUMN pinned INTEGER DEFAULT 0");  // ✅ Thêm cột nếu chưa có
+            } catch (SQLiteException e) {
+                // Cột lastEdited có thể đã tồn tại, bỏ qua lỗi
+            }
         }
     }
 
@@ -58,6 +64,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("timestamp", note.getTimestamp());
         cv.put("locked", note.isLocked() ? 1 : 0);
         cv.put("lastEdited", note.getLastEdited());
+        cv.put("pinned", note.isPinned() ? 1 : 0);  // thêm dòng này
         return db.insert(TABLE, null, cv);
     }
 
@@ -73,6 +80,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 n.setTimestamp(cursor.getLong(cursor.getColumnIndexOrThrow("timestamp")));
                 n.setLocked(cursor.getInt(cursor.getColumnIndexOrThrow("locked")) == 1);
                 n.setLastEdited(cursor.getLong(cursor.getColumnIndexOrThrow("lastEdited")));
+                n.setPinned(cursor.getInt(cursor.getColumnIndexOrThrow("pinned")) == 1);  // thêm dòng này
                 notes.add(n);
             } while (cursor.moveToNext());
         }
@@ -91,11 +99,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
             note.setTimestamp(cursor.getLong(cursor.getColumnIndexOrThrow("timestamp")));
             note.setLocked(cursor.getInt(cursor.getColumnIndexOrThrow("locked")) == 1);
             note.setLastEdited(cursor.getLong(cursor.getColumnIndexOrThrow("lastEdited")));
+            note.setPinned(cursor.getInt(cursor.getColumnIndexOrThrow("pinned")) == 1);  // thêm dòng này
             cursor.close();
             return note;
         }
         return null;
     }
+
 
     public void deleteNote(int noteId) {
         SQLiteDatabase db = getWritableDatabase();
@@ -110,6 +120,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
         cv.put("timestamp", note.getTimestamp());
         cv.put("locked", note.isLocked() ? 1 : 0);
         cv.put("lastEdited", note.getLastEdited());
+        cv.put("pinned", note.isPinned() ? 1 : 0);  // thêm dòng này
         return db.update(TABLE, cv, "id = ?", new String[]{String.valueOf(note.getId())});
     }
 

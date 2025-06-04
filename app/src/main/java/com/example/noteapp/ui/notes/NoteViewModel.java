@@ -5,15 +5,18 @@ import android.app.Application;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
-
+import androidx.lifecycle.MutableLiveData;
+import java.util.concurrent.ExecutorService;
 import com.example.noteapp.data.NoteRepository;
 import com.example.noteapp.model.Note;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 public class NoteViewModel extends AndroidViewModel {
 
     private final NoteRepository repository;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
     public NoteViewModel(@NonNull Application application) {
         super(application);
@@ -31,9 +34,23 @@ public class NoteViewModel extends AndroidViewModel {
     public LiveData<List<Note>> getAllUnlockedNotes() {
         return repository.getNotesWhereLocked(false);
     }
+    public LiveData<List<Note>> getPinnedUnlockedNotesSortedByLastEditedAsc() {
+        MutableLiveData<List<Note>> liveData = new MutableLiveData<>();
+        executorService.execute(() -> {
+            List<Note> notes = repository.getPinnedUnlockedNotesSortedByLastEditedAsc();
+            liveData.postValue(notes);
+        });
+        return liveData;
+    }
 
     public void insertNote(Note note) {
         repository.insertNote(note);
+    }
+    public LiveData<List<Note>> getPinnedUnlockedNotes(int maxPinned) {
+        return repository.getPinnedUnlockedNotes(maxPinned);
+    }
+    public LiveData<List<Note>> getUnpinnedUnlockedNotes() {
+        return repository.getUnpinnedUnlockedNotes();
     }
 
     public void updateNote(Note note) {

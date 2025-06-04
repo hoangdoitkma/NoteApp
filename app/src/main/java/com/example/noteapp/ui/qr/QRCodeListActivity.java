@@ -17,6 +17,7 @@ import com.example.noteapp.R;
 import com.example.noteapp.data.QRDatabaseHelper;
 import com.example.noteapp.model.QRCode;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.yalantis.ucrop.UCrop;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -52,21 +53,24 @@ public class QRCodeListActivity extends AppCompatActivity {
                     if (result.getResultCode() == RESULT_OK && result.getData() != null) {
                         Uri imageUri = result.getData().getData();
                         if (imageUri != null) {
-                            saveImageToInternalStorage(imageUri);
+                            // Bắt đầu cắt ảnh bằng uCrop
+                            Uri destinationUri = Uri.fromFile(new File(getCacheDir(), "cropped_qr_" + System.currentTimeMillis() + ".png"));
+
+                            UCrop.Options options = new UCrop.Options();
+                            options.setFreeStyleCropEnabled(true); // ✅ Cắt thủ công
+                            options.setHideBottomControls(false);   // ✅ Hiện điều khiển
+                            options.setToolbarTitle("Cắt mã QR");
+                            options.setShowCropGrid(true);
+
+                            UCrop.of(imageUri, destinationUri)
+                                    .withAspectRatio(1, 1)
+                                    .withMaxResultSize(1080, 1080)
+                                    .withOptions(options)
+                                    .start(QRCodeListActivity.this);
                         }
                     }
                 }
         );
-    }
-
-    private void loadQRCodes() {
-        List<QRCode> list = dbHelper.getAllQRCodes();
-        if (adapter == null) {
-            adapter = new QRCodeAdapter(this, list);
-            recyclerView.setAdapter(adapter);
-        } else {
-            adapter.setQrCodeList(list);
-        }
     }
 
     private void openImagePicker() {
@@ -75,10 +79,25 @@ public class QRCodeListActivity extends AppCompatActivity {
         pickImageLauncher.launch(intent);
     }
 
+    // Xử lý kết quả từ uCrop
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == UCrop.REQUEST_CROP) {
+            Uri resultUri = UCrop.getOutput(data);
+            if (resultUri != null) {
+                saveImageToInternalStorage(resultUri);
+            }
+        } else if (resultCode == UCrop.RESULT_ERROR) {
+            Throwable cropError = UCrop.getError(data);
+            Toast.makeText(this, "Lỗi cắt ảnh: " + (cropError != null ? cropError.getMessage() : "Không rõ lỗi"), Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private void saveImageToInternalStorage(Uri uri) {
         try {
-            String fileName = queryFileName(uri);
-            if (fileName == null) fileName = "qr_" + System.currentTimeMillis() + ".png";
+            String fileName = "qr_" + System.currentTimeMillis() + ".png";
 
             InputStream inputStream = getContentResolver().openInputStream(uri);
             File file = new File(getFilesDir(), fileName);
@@ -102,6 +121,16 @@ public class QRCodeListActivity extends AppCompatActivity {
         }
     }
 
+    private void loadQRCodes() {
+        List<QRCode> list = dbHelper.getAllQRCodes();
+        if (adapter == null) {
+            adapter = new QRCodeAdapter(this, list);
+            recyclerView.setAdapter(adapter);
+        } else {
+            adapter.setQrCodeList(list);
+        }
+    }
+
     private String queryFileName(Uri uri) {
         String result = null;
         try (Cursor cursor = getContentResolver().query(uri, null, null, null, null)) {
@@ -113,23 +142,5 @@ public class QRCodeListActivity extends AppCompatActivity {
             }
         }
         return result;
-    }
-
-    private void shareQRCode(QRCode qrCode) {
-        File file = new File(qrCode.getImagePath());
-        if (!file.exists()) {
-            Toast.makeText(this, "File không tồn tại", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        Uri fileUri = androidx.core.content.FileProvider.getUriForFile(
-                this,
-                getPackageName() + ".fileprovider",
-                file);
-
-        Intent shareIntent = new Intent(Intent.ACTION_SEND);
-        shareIntent.setType("image/*");
-        shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(Intent.createChooser(shareIntent, "Chia sẻ mã QR qua"));
     }
 }

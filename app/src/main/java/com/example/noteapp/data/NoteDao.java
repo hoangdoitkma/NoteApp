@@ -78,6 +78,7 @@ public class NoteDao {
         cv.put("timestamp", note.getTimestamp());
         cv.put("locked", note.isLocked() ? 1 : 0);
         cv.put("lastEdited", note.getLastEdited());
+        cv.put("pinned", note.isPinned() ? 1 : 0);
         return db.update("notes", cv, "id = ?", new String[]{String.valueOf(note.getId())});
     }
 
@@ -94,6 +95,101 @@ public class NoteDao {
         note.setTimestamp(cursor.getLong(cursor.getColumnIndexOrThrow("timestamp")));
         note.setLocked(cursor.getInt(cursor.getColumnIndexOrThrow("locked")) == 1);
         note.setLastEdited(cursor.getLong(cursor.getColumnIndexOrThrow("lastEdited")));
+        note.setPinned(cursor.getInt(cursor.getColumnIndexOrThrow("pinned")) == 1);  // thêm dòng này
         return note;
     }
+
+    public List<Note> getPinnedUnlockedNotes(int limit) {
+        List<Note> notes = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                "notes",
+                null,
+                "locked = 0 AND pinned = 1",
+                null,
+                null,
+                null,
+                "lastEdited DESC",
+                String.valueOf(limit)
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                notes.add(cursorToNote(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return notes;
+    }
+
+    public List<Note> getUnpinnedUnlockedNotes() {
+        List<Note> notes = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                "notes",
+                null,
+                "locked = 0 AND (pinned IS NULL OR pinned = 0)",
+                null,
+                null,
+                null,
+                "lastEdited DESC"
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                notes.add(cursorToNote(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return notes;
+    }
+
+    public List<Note> getPinnedUnlockedNotesSortedByLastEditedAsc() {
+        List<Note> notes = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+
+        Cursor cursor = db.query(
+                "notes",
+                null,
+                "locked = 0 AND pinned = 1",
+                null,
+                null,
+                null,
+                "lastEdited ASC"  // Sắp xếp tăng dần theo lastEdited, note ghim lâu nhất sẽ đầu tiên
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                notes.add(cursorToNote(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return notes;
+    }
+
+    public List<Note> getNotesWherePinned(boolean pinned) {
+        List<Note> notes = new ArrayList<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query(
+                "notes",
+                null,
+                "pinned = ?",
+                new String[]{pinned ? "1" : "0"},
+                null,
+                null,
+                "lastEdited DESC"
+        );
+
+        if (cursor.moveToFirst()) {
+            do {
+                notes.add(cursorToNote(cursor));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        return notes;
+    }
+
+
 }

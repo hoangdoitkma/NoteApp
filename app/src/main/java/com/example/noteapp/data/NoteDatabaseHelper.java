@@ -8,10 +8,8 @@ import android.database.sqlite.SQLiteException;
 public class NoteDatabaseHelper extends SQLiteOpenHelper {
 
     private static final String DB_NAME = "notes.db";
-    private static final int DB_VERSION = 2;
-
+    private static final int DB_VERSION = 3; // Tăng version lên 3
     private static NoteDatabaseHelper instance;
-
     private static final String TABLE_NOTES = "notes";
 
     private NoteDatabaseHelper(Context context) {
@@ -33,7 +31,8 @@ public class NoteDatabaseHelper extends SQLiteOpenHelper {
                 "content TEXT, " +
                 "timestamp LONG, " +
                 "locked INTEGER DEFAULT 0, " +
-                "lastEdited LONG DEFAULT 0" +
+                "lastEdited LONG DEFAULT 0, " +
+                "pinned INTEGER DEFAULT 0" +  // Thêm cột pinned
                 ")";
         db.execSQL(createNotesTable);
     }
@@ -48,5 +47,11 @@ public class NoteDatabaseHelper extends SQLiteOpenHelper {
                 db.execSQL("ALTER TABLE " + TABLE_NOTES + " ADD COLUMN lastEdited LONG DEFAULT 0");
             } catch (SQLiteException ignored) {}
         }
+        if (oldVersion < 3) {
+            try {
+                db.execSQL("ALTER TABLE " + TABLE_NOTES + " ADD COLUMN pinned INTEGER DEFAULT 0");
+            } catch (SQLiteException ignored) {}
+        }
     }
 }
+

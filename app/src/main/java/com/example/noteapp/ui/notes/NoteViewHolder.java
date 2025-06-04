@@ -2,8 +2,16 @@ package com.example.noteapp.ui.notes;
 
 import android.view.View;
 import android.widget.TextView;
+
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.noteapp.R;
+import com.example.noteapp.model.Note;
+
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class NoteViewHolder extends RecyclerView.ViewHolder {
     TextView titleTextView;
@@ -15,6 +23,10 @@ public class NoteViewHolder extends RecyclerView.ViewHolder {
         contentTextView = itemView.findViewById(R.id.noteContent);
         textViewLastEdited = itemView.findViewById(R.id.textViewLastEdited);
     }
+
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
+
+
 
     public TextView getTitleTextView() {
         return titleTextView;

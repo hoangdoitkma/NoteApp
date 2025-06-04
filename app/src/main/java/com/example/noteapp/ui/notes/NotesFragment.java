@@ -18,6 +18,8 @@ import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class NotesFragment extends Fragment {
 
@@ -27,21 +29,55 @@ public class NotesFragment extends Fragment {
 
     private boolean biometricVerifiedForLockedNotes = false;
     private int selectedFilterPosition = 0;
+    private AutoCompleteTextView autoCompleteTextViewFilter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View v = inflater.inflate(R.layout.fragment_notes, container, false);
 
-        spinnerFilter = v.findViewById(R.id.spinnerFilter);
 
-        // Set adapter cho spinner với layout tùy chỉnh spinner_item.xml
-        ArrayAdapter<CharSequence> adapterSpinner = ArrayAdapter.createFromResource(
+
+        autoCompleteTextViewFilter = v.findViewById(R.id.autoCompleteTextViewFilter);
+
+        String[] filterOptions = getResources().getStringArray(R.array.note_filter_options);
+        ArrayAdapter<String> adapterDropdown = new ArrayAdapter<>(
                 getContext(),
-                R.array.note_filter_options,
-                R.layout.spinner_item
+                R.layout.spinner_item,
+                filterOptions
         );
-        adapterSpinner.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFilter.setAdapter(adapterSpinner);
+        autoCompleteTextViewFilter.setAdapter(adapterDropdown);
+
+        // Đặt mặc định chọn option đầu tiên
+        autoCompleteTextViewFilter.setText(filterOptions[selectedFilterPosition], false);
+
+        autoCompleteTextViewFilter.setOnItemClickListener((parent, view, position, id) -> {
+            selectedFilterPosition = position;
+
+            if (position == 0) {
+                biometricVerifiedForLockedNotes = false;
+                reloadCurrentFilter();
+            } else if (position == 1) {
+                if (getActivity() instanceof AppCompatActivity) {
+                    BiometricHelper.showBiometricPrompt((AppCompatActivity) getActivity(), success -> {
+                        if (success) {
+                            biometricVerifiedForLockedNotes = true;
+                            loadLockedNotes();
+                        } else {
+                            Toast.makeText(getContext(), "Xác thực không thành công", Toast.LENGTH_SHORT).show();
+                            biometricVerifiedForLockedNotes = false;
+                            selectedFilterPosition = 0;
+                            autoCompleteTextViewFilter.setText(filterOptions[0], false);
+                            reloadCurrentFilter();
+                        }
+                    });
+                } else {
+                    Toast.makeText(getContext(), "Không hỗ trợ xác thực", Toast.LENGTH_SHORT).show();
+                    selectedFilterPosition = 0;
+                    autoCompleteTextViewFilter.setText(filterOptions[0], false);
+                    reloadCurrentFilter();
+                }
+            }
+        });
 
         adapter = new NoteAdapter(new ArrayList<>());
         adapter.setOnItemClickListener(new NoteAdapter.OnItemClickListener() {
@@ -81,42 +117,9 @@ public class NotesFragment extends Fragment {
 
         noteViewModel = new ViewModelProvider(this).get(NoteViewModel.class);
 
-        spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-                selectedFilterPosition = position;
 
-                if (position == 0) {
-                    biometricVerifiedForLockedNotes = false;
-                    loadUnlockedNotes();
-                } else if (position == 1) {
-                    if (getActivity() instanceof AppCompatActivity) {
-                        BiometricHelper.showBiometricPrompt((AppCompatActivity) getActivity(), success -> {
-                            if (success) {
-                                biometricVerifiedForLockedNotes = true;
-                                loadLockedNotes();
-                            } else {
-                                Toast.makeText(getContext(), "Xác thực không thành công", Toast.LENGTH_SHORT).show();
-                                biometricVerifiedForLockedNotes = false;
-                                selectedFilterPosition = 0;
-                                spinnerFilter.setSelection(0);
-                                loadUnlockedNotes();
-                            }
-                        });
-                    } else {
-                        Toast.makeText(getContext(), "Không hỗ trợ xác thực", Toast.LENGTH_SHORT).show();
-                        selectedFilterPosition = 0;
-                        spinnerFilter.setSelection(0);
-                        loadUnlockedNotes();
-                    }
-                }
-            }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
-        });
 
-        spinnerFilter.setSelection(selectedFilterPosition);
 
         FloatingActionButton fabAddNote = v.findViewById(R.id.fabAddNote);
         fabAddNote.setOnClickListener(view -> {
@@ -141,15 +144,55 @@ public class NotesFragment extends Fragment {
         });
     }
 
-    private void loadUnlockedNotes() {
-        if (spinnerFilter.getSelectedItemPosition() != 0) {
-            spinnerFilter.setSelection(0);
+    private void reloadCurrentFilter() {
+        if (selectedFilterPosition == 0) {
+            loadUnlockedNotes();
+        } else if (biometricVerifiedForLockedNotes) {
+            loadLockedNotes();
         }
-        noteViewModel.getNotesWhereLocked(false).observe(getViewLifecycleOwner(), notes -> {
-            if (notes != null) {
-                adapter.setNotes(notes);
-            }
+    }
+
+    private void loadUnlockedNotes() {
+        noteViewModel.getPinnedUnlockedNotes(3).observe(getViewLifecycleOwner(), pinnedNotesOriginal -> {
+            List<Note> pinnedNotes = pinnedNotesOriginal != null ? pinnedNotesOriginal : new ArrayList<>();
+
+            noteViewModel.getUnpinnedUnlockedNotes().observe(getViewLifecycleOwner(), unpinnedNotesOriginal -> {
+                List<Note> unpinnedNotes = unpinnedNotesOriginal != null ? unpinnedNotesOriginal : new ArrayList<>();
+
+                List<Note> combined = new ArrayList<>(pinnedNotes);
+                combined.addAll(unpinnedNotes);
+
+                adapter.setNotes(combined);
+            });
         });
+
+    }
+
+    private void pinNoteWithLimit(Note note) {
+        if (note.isPinned()) {
+            // Nếu note đã ghim, bỏ ghim đi
+            note.setPinned(false);
+            noteViewModel.updateNote(note);
+            reloadCurrentFilter();
+
+        } else {
+            // Lấy danh sách note ghim đang có
+            noteViewModel.getPinnedUnlockedNotesSortedByLastEditedAsc().observe(getViewLifecycleOwner(), pinnedNotes -> {
+                if (pinnedNotes != null && pinnedNotes.size() >= 3) {
+                    // Bỏ ghim note ghim lâu nhất (đầu danh sách)
+                    Note oldestPinnedNote = pinnedNotes.get(0);
+                    oldestPinnedNote.setPinned(false);
+                    noteViewModel.updateNote(oldestPinnedNote);
+                }
+                // Ghim note mới
+                note.setPinned(true);
+                noteViewModel.updateNote(note);
+
+                // Reload danh sách
+                reloadCurrentFilter();
+
+            });
+        }
     }
 
     private void showNoteOptionsDialog(Note note, int position) {
@@ -162,19 +205,28 @@ public class NotesFragment extends Fragment {
             adapter.getNotes().remove(position);
             adapter.notifyItemRemoved(position);
             Toast.makeText(getContext(), "Đã xóa ghi chú", Toast.LENGTH_SHORT).show();
-            loadUnlockedNotes();
+            reloadCurrentFilter();
+
             dialog.dismiss();
         });
 
-        view.findViewById(R.id.option_lock).setOnClickListener(v -> {
+        view.findViewById(R.id.option_toggle_lock).setOnClickListener(v -> {
             if (BiometricHelper.isBiometricAvailable(requireContext())) {
                 if (getActivity() instanceof AppCompatActivity) {
                     BiometricHelper.showBiometricPrompt((AppCompatActivity) getActivity(), success -> {
                         if (success) {
-                            note.setLocked(true);
+                            boolean wasLocked = note.isLocked();
+                            note.setLocked(!wasLocked);
                             noteViewModel.updateNote(note);
-                            loadUnlockedNotes();
-                            Toast.makeText(getContext(), "Đã khóa ghi chú", Toast.LENGTH_SHORT).show();
+
+                            if (wasLocked) {
+                                Toast.makeText(getContext(), "Đã bỏ khóa ghi chú", Toast.LENGTH_SHORT).show();
+                            } else {
+                                Toast.makeText(getContext(), "Đã khóa ghi chú", Toast.LENGTH_SHORT).show();
+                            }
+
+                            reloadCurrentFilter();
+
                         } else {
                             Toast.makeText(getContext(), "Xác thực không thành công", Toast.LENGTH_SHORT).show();
                         }
@@ -189,11 +241,9 @@ public class NotesFragment extends Fragment {
         });
 
         view.findViewById(R.id.option_pin).setOnClickListener(v -> {
-            note.setPinned(true);
-            noteViewModel.updateNote(note);
-            Toast.makeText(getContext(), "Đã ghim ghi chú", Toast.LENGTH_SHORT).show();
-            loadUnlockedNotes();
+            pinNoteWithLimit(note);
             dialog.dismiss();
+
         });
 
         dialog.show();
@@ -205,7 +255,8 @@ public class NotesFragment extends Fragment {
     public void onResume() {
         super.onResume();
         if (selectedFilterPosition == 0) {
-            loadUnlockedNotes(); // reload ghi chú không khóa
+            reloadCurrentFilter();
+            // reload ghi chú không khóa
         } else if (biometricVerifiedForLockedNotes) {
             loadLockedNotes(); // reload ghi chú đã khóa (nếu đã xác thực)
         }
