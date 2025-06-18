@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbarAddNote"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/purple_500"
+        android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+        app:navigationIcon="@drawable/ic_back"
+        app:title="Ghi chú" />
+
+    <EditText
+        android:id="@+id/editTitle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Tiêu đề"
+        android:textSize="18sp"
+        android:padding="12dp"
+        android:textStyle="bold" />
+
+    <!-- Toolbar định dạng -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="6dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+
+            <ImageButton android:id="@+id/btnBold" android:src="@drawable/ic_bold" style="@style/EditorButton"/>
+            <ImageButton android:id="@+id/btnItalic" android:src="@drawable/ic_italic" style="@style/EditorButton"/>
+            <ImageButton android:id="@+id/btnUnderline" android:src="@drawable/ic_underline" style="@style/EditorButton"/>
+            <ImageButton android:id="@+id/btnStrikethrough" android:src="@drawable/ic_strikethrough" style="@style/EditorButton"/>
+            <ImageButton android:id="@+id/btnBullets" android:src="@drawable/ic_list_bullet" style="@style/EditorButton"/>
+            <ImageButton android:id="@+id/btnNumbers" android:src="@drawable/ic_list_number" style="@style/EditorButton"/>
+            <ImageButton android:id="@+id/btnQuote" android:src="@drawable/ic_quote" style="@style/EditorButton"/>
+            <ImageButton android:id="@+id/btnUndo" android:src="@drawable/ic_undo" style="@style/EditorButton"/>
+            <ImageButton android:id="@+id/btnRedo" android:src="@drawable/ic_redo" style="@style/EditorButton"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Nội dung ghi chú -->
+    <jp.wasabeef.richeditor.RichEditor
+        android:id="@+id/richEditor"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@android:color/white" />
+
+    <Button
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Lưu ghi chú"
+        android:textColor="@android:color/white"
+        android:backgroundTint="@color/purple_500"
+        android:layout_margin="12dp"
+        android:background="@drawable/rounded_button" />
+</LinearLayout>

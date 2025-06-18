@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Toolbar.TitleText" parent="TextAppearance.Widget.AppCompat.Toolbar.Title">
+        <item name="android:textSize">32sp</item>
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:textStyle">bold</item>
+    </style>
+    <style name="ToolbarSpinner" parent="Widget.AppCompat.Spinner">
+        <item name="android:textColor">@android:color/black</item>
+        <item name="android:background">@drawable/bg_spinner_toolbar</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+    </style>
+    <style name="EditorButton">
+        <item name="android:background">?attr/selectableItemBackgroundBorderless</item>
+        <item name="android:layout_width">48dp</item>
+        <item name="android:layout_height">48dp</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:tint">@android:color/black</item>
+    </style>
+</resources>
