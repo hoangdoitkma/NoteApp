@@ -79,5 +79,10 @@ public interface NoteDao {
     Note getNoteByIdNow(int id);
     @Query("SELECT * FROM notes WHERE id = :noteId LIMIT 1")
     LiveData<Note> getNoteById(int noteId);
+    @Query("SELECT * FROM notes WHERE id = :noteId LIMIT 1")
+    Note getNoteByIdSync(int noteId); // dùng cho đồng bộ
+
+    @Query("SELECT * FROM notes")
+    List<Note> getAllSync();
 
 }

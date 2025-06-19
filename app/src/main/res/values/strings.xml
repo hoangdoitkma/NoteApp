@@ -2,8 +2,10 @@
     <string name="app_name">NoteApp</string>
     <string name="add_note">Thêm ghi chú</string>
     <string name="add_expense">Thêm chi tiêu</string>
+
     <string-array name="note_filter_options">
         <item>Tất cả ghi chú</item>
         <item>Ghi chú đã khóa</item>
     </string-array>
+    <string name="default_web_client_id">66667416443-rc33jsn98sjtnurkb4u81krt7nc34euu.apps.googleusercontent.com</string>
 </resources>

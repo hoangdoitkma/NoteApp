@@ -21,13 +21,14 @@ public class NoteRepository {
     private final LiveData<List<Note>> allNotes;
     private final FirebaseNoteHelper firebaseHelper;
     private final ExecutorService executorService;
-
+    private final FirestoreNoteRepository firestoreRepo;
     public NoteRepository(Application app) {
         NoteDatabase db = NoteDatabase.getInstance(app);
         noteDao = db.noteDao();
         allNotes = noteDao.getAllNotes();
         firebaseHelper = new FirebaseNoteHelper("default_user"); // Replace with FirebaseAuth UID if needed
         executorService = Executors.newSingleThreadExecutor();
+        firestoreRepo = new FirestoreNoteRepository(app);
     }
 
     // ========================= //
@@ -41,21 +42,24 @@ public class NoteRepository {
     public void insert(Note note) {
         executorService.execute(() -> {
             noteDao.insert(note);
-            firebaseHelper.uploadNote(note);
+//            firebaseHelper.uploadNote(note);
+            firestoreRepo.saveNoteToFirestore(note); // lưu lên Firestore
         });
     }
 
     public void update(Note note) {
         executorService.execute(() -> {
             noteDao.update(note);
-            firebaseHelper.uploadNote(note);
+//            firebaseHelper.uploadNote(note);
+            firestoreRepo.saveNoteToFirestore(note); // cập nhật Firestore
         });
     }
 
     public void delete(Note note) {
         executorService.execute(() -> {
             noteDao.delete(note);
-            firebaseHelper.deleteNote(note);
+//            firebaseHelper.deleteNote(note);
+            firestoreRepo.deleteNoteFromFirestore(note.getId()); // xóa khỏi Firestore
         });
     }
 
@@ -85,6 +89,12 @@ public class NoteRepository {
             }
         });
     }
+    public void syncFromFirestore() {
+        executorService.execute(() -> {
+            firestoreRepo.syncNotesFromFirestore(noteDao);
+        });
+    }
+
 
     // ========================= //
     //       Search / Filter     //
